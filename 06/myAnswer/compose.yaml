@@ -1,0 +1,8 @@
+version: 3.9.0
+services:
+  web1:
+    image: alpine:latest
+    command: date
+  web2:
+    image: alpine:latest
+    command: date

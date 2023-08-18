@@ -1,0 +1,40 @@
+version: '3.9'
+services:
+  web:
+    depends_on:
+      # - mongo
+      mongo:
+        condition: service_healthy
+
+    container_name: web_name
+    image: node:6.9.1
+    ports:
+      - '3000:3000'
+    working_dir: /work
+    volumes:
+      - .:/work
+    environment:
+      - MONGO_IP=mongo
+    command: node /work/server.js
+
+  mongo:
+    image: 'mongo:3.6.23'
+    ports:
+      - '27017:27017'
+    container_name: mongo
+    healthcheck:
+      test: ['CMD-SHELL', 'ps aux | grep mongod']
+      interval: 3s
+      timeout: 1s
+      retries: 5
+      start_period: 0s
+
+  test:
+    depends_on:
+      - mongo
+      - web
+    image: node:6.9.1
+    working_dir: /work
+    volumes:
+      - .:/work
+    command: curl -s http://web:3000
